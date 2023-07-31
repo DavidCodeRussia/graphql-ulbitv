@@ -1,23 +1,61 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
+import { useMutation, useQuery } from "@apollo/client";
+import { GET_ALL_USERS } from "./query/user";
+import { CREATE_USER } from "./mutations/user";
+import "./App.css";
 
 function App() {
+  const { data, loading, error, refetch } = useQuery(GET_ALL_USERS);
+  const [newUser] = useMutation(CREATE_USER);
+
+  const [users, setUsers] = useState([]);
+  const [username, setUsername] = useState("");
+  const [age, setAge] = useState(0);
+
+  useEffect(() => {
+    if (!loading) {
+      setUsers(data.getAllUsers);
+    }
+  }, [data]);
+
+  const addUser = (e) => {
+    e.preventDefault();
+    newUser({
+      variables: {
+        input: {
+          username,
+          age,
+        },
+      },
+    }).then((res) => {
+      console.log("res", res);
+      setUsername("");
+      setAge(0);
+    });
+  };
+
+  const getAll = (e) => {
+    e.preventDefault();
+    refetch();
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <form action="">
+        <input value={username} onChange={(e) => setUsername(e.target.value)} type="text" />
+        <input value={age} onChange={(e) => setAge(+e.target.value)} type="number" />
+        <div>
+          <button onClick={addUser}>Создать</button>
+          <button onClick={getAll}>Получить</button>
+        </div>
+      </form>
+      <div>
+        {users.map((user, key) => (
+          <div key={key}>
+            {user.id}. {user.username} {user.age}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
