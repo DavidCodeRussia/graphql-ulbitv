@@ -2,10 +2,16 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { GET_ALL_USERS } from "./query/user";
 import { CREATE_USER } from "./mutations/user";
+import { GET_USER } from "./query/user";
 import "./App.css";
 
 function App() {
   const { data, loading, error, refetch } = useQuery(GET_ALL_USERS);
+  const { data2, loading2, error2, refetch2 } = useQuery(GET_USER, {
+    variables: {
+      id: 777,
+    },
+  });
   const [newUser] = useMutation(CREATE_USER);
 
   const [users, setUsers] = useState([]);
